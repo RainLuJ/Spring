@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Spring-AOP/Spring-AOP.iml" filepath="$PROJECT_DIR$/Spring-AOP/Spring-AOP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-IOC/Spring-IOC.iml" filepath="$PROJECT_DIR$/Spring-IOC/Spring-IOC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-MyBatis/Spring-MyBatis.iml" filepath="$PROJECT_DIR$/Spring-MyBatis/Spring-MyBatis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-SimpleWebProject/Spring-SimpleWebProject.iml" filepath="$PROJECT_DIR$/Spring-SimpleWebProject/Spring-SimpleWebProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-Transaction-AspectjAOP/Spring-Transaction-AspectjAOP.iml" filepath="$PROJECT_DIR$/Spring-Transaction-AspectjAOP/Spring-Transaction-AspectjAOP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-Transaction-SpringAnno/Spring-Transaction-SpringAnno.iml" filepath="$PROJECT_DIR$/Spring-Transaction-SpringAnno/Spring-Transaction-SpringAnno.iml" />
+    </modules>
+  </component>
+</project>

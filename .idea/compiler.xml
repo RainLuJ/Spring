@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Spring-AOP" />
+        <module name="Spring-MyBatis" />
+        <module name="Spring-Transaction-SpringAnno" />
+        <module name="Spring-Transaction-AspectjAOP" />
+        <module name="Spring-SimpleWebProject" />
+        <module name="Spring-IOC" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Spring-AOP" target="1.8" />
+      <module name="Spring-IOC" target="1.8" />
+      <module name="Spring-MyBatis" target="1.8" />
+      <module name="Spring-SimpleWebProject" target="1.8" />
+      <module name="Spring-Transaction-AspectjAOP" target="1.8" />
+      <module name="Spring-Transaction-SpringAnno" target="1.8" />
+      <module name="Spring-Transaction-SpringAnno (1)" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

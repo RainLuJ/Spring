@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 把数据库的配置信息写在一个独立的文件当中 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!-- 声明数据源DataSource：作用是->连接数据库的 -->
+    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <!-- set注入，给DruidDataSource提供连接数据库的信息 -->
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.user}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+    </bean>
+
+    <!-- 声明的是myBatis中提供的SqlSessionFactoryBean类，这个类的内部创建了SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- set注入，把数据库连接池赋值给了dataSource属性 -->
+        <property name="dataSource" ref="myDataSource"/>
+
+        <!-- 声明myBatis主配置文件的位置
+                configLocation属性的类型是：Resource，用来读取配置文件
+                它的赋值是特殊的！！！使用【value】
+         -->
+        <!-- 在Spring的配置文件中指定其它文件的路径，需要使用classpath -->
+        <property name="configLocation" value="classpath:myBatis.xml"/>
+    </bean>
+
+    <!-- 创建dao对象，使用SqlSession的getMapper(StudentDao.class)生成每个dao接口的代理对象
+            MapperScannerConfigurer：在内部调用getMapper()
+     -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 指定SqlSessionFactory对象的id -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+
+        <!-- 指定包名，包名是dao接口所在的包名
+                 MapperScannerConfigurer会扫描这个包中的所有接口，
+                 并把【每个包中的接口】都执行一次【getMapper()】方法，得到每个接口的dao对象。
+                 【再将创建好的dao对象放入到Spring容器中】
+                 这里自动创建的dao接口对象的名称为：接口首字母小写
+        -->
+        <property name="basePackage" value="com.lujun61.dao"/>
+    </bean>
+
+    <!-- 创建Service -->
+    <bean id="buyGoodsService" class="com.lujun61.service.impl.BuyGoodsServiceImpl">
+        <property name="saleDao" ref="saleDao"/>
+        <property name="goodsDao" ref="goodsDao"/>
+    </bean>
+
+                            <!-- 使用Aspectj框架的事务处理 -->
+    <!-- 1、声明事务处理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 指定数据源 -->
+        <property name="dataSource" ref="myDataSource" />
+    </bean>
+
+    <!-- 2、声明Service方法和它的事务属性（隔离级别、传播行为、超时时间）
+            id：自定义名称，表示<tx:advice>和</tx:advice>之间的配置内容的     【通知】
+            transaction-manager：事务管理器对象的id
+    -->
+    <tx:advice id="myAdvice" transaction-manager="transactionManager">
+        <!-- <tx:attributes></tx:attributes>：配置事务属性 -->
+        <tx:attributes>
+            <!-- <tx:method>：给具体的方法配置事务属性，method可以有多个，分别给不同的方法设置事务属性
+                    name：方法名称
+                        1）完整的方法名称，而不是全限定名称
+                        2）方法可以使用通配符*，来表示任意字符
+                    propagation：传播行为_枚举值
+                    isolation：隔离级别
+                    rollbackFor：异常的全限定名称
+             -->
+                    <!-- 一级 -->
+            <tx:method name="buyGood" propagation="REQUIRED" isolation="DEFAULT" read-only="false"
+                       rollback-for="com.lujun61.exception.NoEnoughGoodsException,java.lang.NullPointerException"/>
+
+
+                                    <!-- 使用通配符，给多个方法统一配置事务属性 -->
+                                <!-- 通配符的表示方式所代表的方法有不同的执行优先级 -->
+                    <!-- 二级 -->
+            <!-- 命名规则：带add的添加方法 -->
+            <tx:method name="add*" propagation="REQUIRED" isolation="DEFAULT" read-only="true"
+                       rollback-for="com.lujun61.exception.NoEnoughGoodsException,java.lang.NullPointerException"/>
+
+            <!-- 命名规则：带modify的修改方法 -->
+            <tx:method name="modify*" propagation="REQUIRED" isolation="DEFAULT" read-only="true"
+                       rollback-for="com.lujun61.exception.NoEnoughGoodsException,java.lang.NullPointerException"/>
+
+            <!-- 命名规则：带remove的删除方法 -->
+            <tx:method name="remove*" propagation="REQUIRED" isolation="DEFAULT" read-only="true"
+                       rollback-for="com.lujun61.exception.NoEnoughGoodsException,java.lang.NullPointerException"/>
+
+                    <!-- 三级 -->
+            <!-- 命名规则————查询方法：query、search、find -->
+            <tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" read-only="false"
+                       rollback-for="com.lujun61.exception.NoEnoughGoodsException,java.lang.NullPointerException"/>
+        </tx:attributes>
+
+
+        <!-- 在以上的配置方式中存在着缺点：
+                无论哪个包中的符合命名规范的方法，都会被配置事务。这是不符合咱们的目的的。
+                如果我们只需要给service包中的类配置事务，那就得按照以下方法配置切面表达式
+         -->
+    </tx:advice>
+
+    <aop:config>
+        <!-- 配置切入点表达式：指定哪些包中的类要使用事务
+                id：切入点表达式的名称，唯一值
+                expression：切入点表达式，指定哪些类要使用事务，aspectj会去创建代理对象
+
+        -->
+        <aop:pointcut id="servicePT" expression="execution(* *..service..*.*(..))"/>
+
+        <!-- 配置【增强器】：关联advice和pointcut
+                 advice-ref：【通知】，引入<tx:advice>和</tx:advice>之间的配置内容
+                 pointcut-ref：切入点表达式的id
+        -->
+        <aop:advisor advice-ref="myAdvice" pointcut-ref="servicePT" />
+    </aop:config>
+</beans>
+
+
+
+
+
+
+
+
+
+

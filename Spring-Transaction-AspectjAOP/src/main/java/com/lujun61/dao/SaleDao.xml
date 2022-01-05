@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lujun61.dao.SaleDao">
+    <insert id="insertSaleRecords">
+        /* 由于id被设置为了主键，就不需要手动插入id值了，以免将记录的顺序打乱 */
+        insert into business.table_sale(gid,nums) values(#{gid},#{nums})
+    </insert>
+</mapper>

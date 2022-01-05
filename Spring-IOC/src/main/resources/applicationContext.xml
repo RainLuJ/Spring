@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Spring的配置文件：
+        1、beans：根标签，spring把java对象看做一个bean
+        2、spring-beans.xsd 是约束文件，和myBatis中的.dtd约束文件差不多；
+          只是.xsd约束文件的功能更全面一点
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 在Spring中配置bean（对象）——————————>【一个bean标签】只能声明【一个】对象
+             id：对象的自定义名称（别名），具有唯一值。spring通过这个名称找到对象
+             class：【类】的全限定名称（不能是接口，因为spring是通过反射机制创建对象）
+
+             可以看做：
+                Spring将创建好的对象放入到一个特定的Map中————>专门用来存放对象
+                例如：springMap.put(id的值, 对象);
+                springMap.put("student", new Student());
+    -->
+
+    <!--                      简单声明对象的操作                                -->
+    <!-- 声明自定义的对象 -->
+    <bean id="student" class="com.lujun61.bean.Student"/>
+
+    <!-- 声明非自定义的对象 -->
+    <!-- 不管什么对象，只要能拿到全限定名称即可在spring中配置 -->
+    <bean id="myDate" class="java.util.Date"/>
+
+
+
+    <!--                          基于 XML 的 DI                            -->
+
+    <!--                  DI注入（给属性赋值）操作：Set方法                           -->
+    <!-- 【简单数据类型】的set注入：使用 <property> 标签，并通过【value标签属性】赋值
+             在spring中规定java中的基本数据类型和String类型都是简单数据类型
+             类中必须要有对应的set方法！！！ 否则会抛出异常！！！
+
+             既然为属性通过set方法赋值，Spring就会依赖命名规范去寻找【set属性名】的对应set方法；
+     -->
+    <bean id="studentDiSet" class="com.lujun61.bean.Student">
+        <property name="name" value="LJ"/>
+        <!-- XML文件语法格式规定：不管什么数据类型，值都必须放在 "" 之中 -->
+        <property name="age" value="18"/>
+    </bean>
+
+    <!-- 【引用数据类型】的set注入：通过【ref标签属性】赋值
+             【ref标签属性】中写的是 另一个用来赋值的bean的id
+     -->
+    <bean id="peopleDiSet" class="com.lujun61.bean.People">
+        <property name="name" value="WYY"/>
+        <property name="age" value="18"/>
+        <property name="address" ref="address"/>
+    </bean>
+
+    <bean id="address" class="com.lujun61.bean.Address">
+        <property name="province" value="HuBei"/>
+        <property name="city" value="GongAn"/>
+    </bean>
+
+
+
+    <!--                  DI注入（给属性赋值）操作：构造方法                           -->
+    <!-- 构造注入：Spring调用类的有参构造方法，在构造方法中使用 <constructor-arg> 标签给属性赋值
+            ****** 一个 <constructor-arg> 标签表示构造方法的一个参数 ******
+                <constructor-arg> 标签属性：
+                    name：表示构造方法的【形参名】
+                    index：表示构造方法【参数的位置】，参数【从左往右】的位置是0、1、2 ……
+                    value：如果构造方法的【形参类型】为【简单数据类型】的，用value
+                    ref：如果构造方法的【形参类型】为【引用数据类型】的，用ref
+    -->
+    <!-- 使用name属性 -->
+    <bean id="peopleDiConstructorUseNameParam" class="com.lujun61.bean.People">
+        <constructor-arg name="name" value="LKQ"/>
+        <constructor-arg name="age" value="18"/>
+        <constructor-arg name="address" ref="address"/>
+    </bean>
+
+    <!-- 使用index标签属性：不健壮 -->
+    <bean id="peopleDiConstructorUseIdParam" class="com.lujun61.bean.People">
+        <constructor-arg index="0" value="LKQ"/>
+        <constructor-arg index="1" value="18"/>
+        <constructor-arg index="2" ref="address"/>
+    </bean>
+    <!-- 使用index标签属性的省略形态：超级不健壮！！！
+    <bean id="peopleDiConstructorUseIdParam" class="com.lujun61.bean.People">
+        <constructor-arg value="LKQ"/>
+        <constructor-arg value="18"/>
+        <constructor-arg ref="address"/>
+    </bean>
+    -->
+
+    <!-- 构造注入的小应用：使用JDK中 File类 的【构造方法】创建对象 -->
+    <bean id="file" class="java.io.File">
+        <constructor-arg name="parent" value="E:\Study"/>
+        <constructor-arg name="child" value="javaAPI.txt"/>
+    </bean>
+
+
+
+    <!--                  【引用类型属性】的自动注入                        -->
+    <!--
+        使用前景：减少了 <property name="" ref=""/> 标签的使用
+
+        使用方法：
+            使用byName、byType标签属性。
+
+        1、按名称注入（byName）：
+            使用前提：java类中引用数据类型的【属性名称】和Spring配置文件中 <bean> 的【id属性名】一致
+
+        2、按类型注入（byType）：
+            使用前提：java类中引用数据类型的【属性类型】和Spring配置文件中 <bean> 的【class类型】是同源的
+
+            同源属性： 要注意————>必须只有一个 <bean> 满足条件
+                1、java类中引用数据类型的属性和 <bean> 中的【class值】是一致的
+                2、java类中引用数据类型的属性和 <bean>中的【class值】具有【父子关系】
+                3、java类中引用数据类型的属性和 <bean>中的【class值】具有【接口与接口实现类】的关系
+    -->
+    <bean id="peopleDiAutoByName" class="com.lujun61.bean.People" autowire="byName">
+        <property name="name" value="WYY"/>
+        <property name="age" value="18"/>
+    </bean>
+
+    <bean id="peopleDiAutoByType" class="com.lujun61.bean.People" autowire="byType">
+        <property name="name" value="WYY"/>
+        <property name="age" value="18"/>
+    </bean>
+
+
+
+
+    <!--                               多配置文件的使用                              -->
+    <!--
+        使用多配置文件的目的：
+          1.每个配置文件的大小比一个配置文件要小很多。效率高
+          2.避免多人竞争带来的冲突。
+
+          如果你的项目有多个模块（相关的功能在一起）；
+            需要：一个模块一个配置文件。
+          学生考勤模块一个配置文件，  张三
+          学生成绩一个配置文件，      李四
+
+          多文件的分配方式：
+              1. 按功能模块，一个模块一个配置文件
+              2. 按类的功能，数据库相关的配置一个文件配置文件， 做事务的功能一个配置文件，
+                 做service功能的一个配置文件等
+    -->
+    <!--
+        一般使用一个主配置文件去 <import> 多个配置文件；而不在主配置文件中配置属性
+                使用方法：
+                    <import resources="其它配置文件的路径">
+                        关键字：【classpath:】——>表示让Spring以【类路径】的形式去寻找配置文件
+    -->
+    <!-- 导入方法一：直接按照文件名导入 -->
+    <import resource="classpath:spring-sonConfig01.xml" />
+    <import resource="classpath:spring-sonConfig02.xml" />
+
+    <!-- 导入方法二：使用通配符 *
+            注意：主配置文件不能被包含；否则将会是无限递归
+    -->
+    <import resource="classpath:spring-*.xml" />
+
+
+    <!-- ======================================================================== -->
+    <!--                          基于 注解 的 DI                            -->
+
+    <!--
+        首先需要声明【组件扫描器】，所谓组件就是java对象
+            作用：扫描指定包中的所有类，找到类中的所有注解；按照注解的功能创建对象、给对象赋值
+
+        加入【component-scan】标签之后，配置文件的变化：
+            1、加入一个新的约束文件：spring-context.xsd
+            2、给这个新的约束文件起一个命名空间的名称
+    -->
+    <!--
+        可以指定多个包：
+            第一种方式：使用多次组件扫描器，指定不同的包
+            第二种方式：使用分隔符（ ; 或 ,），分隔多个包名
+            第三种方式：指定父包
+    -->
+    <context:component-scan base-package="com.lujun61.annotation" />
+
+    <!--加载属性配置文件
+            让属性配置文件中的值，可以通过 ${} 调用，来使用于给对象赋值的过程中
+    -->
+    <context:property-placeholder location="classpath:user.properties" />
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

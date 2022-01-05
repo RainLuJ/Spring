@@ -1,0 +1,1 @@
+com\lujun61\bean包中存放着：【基于XML文件的DI实体类】

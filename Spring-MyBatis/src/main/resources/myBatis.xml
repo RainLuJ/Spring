@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <typeAliases>
+        <!-- 起别名：把包中的所有类都起别名（类名首字母小写） -->
+        <package name="com.lujun61.bean"/>
+    </typeAliases>
+
+    <mappers>
+        <package name="com.lujun61.dao"/>
+    </mappers>
+</configuration>
