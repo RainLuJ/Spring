@@ -2,10 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/aop
-       https://www.springframework.org/schema/aop/spring-aop.xsd">
+       https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- 将对象统一交给Spring容器进行管理 -->
 
@@ -38,7 +39,8 @@
         所以：代理对象就是一个被修改之后的目标对象；只不过程序看起来仍然是一个目标对象
 
         aspectj-autoproxy：会把Spring容器中所有的【目标对象】一次性都生成【代理对象】
-        proxy-target-class="true"：指定有接口也使用CGLIB
+        proxy-target-class="true"：指定无论_有没有接口_，都使用CGLIB进行动态代理
+            如果为默认值："false"。如果_有接口_，就使用JDK的动态代理。而如果_没有接口_，则自动使用CGLIB的动态代理方式
      -->
     <aop:aspectj-autoproxy/>
     <!--<aop:aspectj-autoproxy proxy-target-class="true"/>-->

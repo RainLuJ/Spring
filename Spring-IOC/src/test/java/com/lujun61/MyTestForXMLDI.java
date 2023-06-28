@@ -12,44 +12,57 @@ import java.util.Date;
 
 
 /**
- * @description 基于【XML文件】的DI
  * @author Jun Lu
+ * @description 基于【XML文件】的DI
  * @date 2021-12-11 17:10:15
  */
 public class MyTestForXMLDI {
+
+    @Test
+    public void testInnerBean() {
+
+        ApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        People people1 = (People) applicationContext.getBean("peopleDiSetUseInnerBeanOfConstruct");
+
+        People people2 = (People) applicationContext.getBean("peopleDiSetUseInnerBeanOfProperty");
+
+        System.out.println("peopleDiSetUseInnerBeanOfConstruct---------" + people1);
+        System.out.println("peopleDiSetUseInnerBeanOfProperty---------" + people2);
+    }
+
     /**
      * @description 在Spring项目中使用容器对象：ApplicationContext 获取对象
      * @author Jun Lu
      * @date 2021-12-07 16:43:13
      */
     @Test
-    public void test01(){
+    public void test01() {
         //使用spring中的容器创建对象：
         //从【类路径】下获取spring配置文件
-        ApplicationContext applicationContext = /* 在这里，【所有】对象就已经被Spring创建好了 */
+        ApplicationContext applicationContext =  // 在这里，【所有】对象就已经被Spring创建好了
                 new ClassPathXmlApplicationContext("applicationContext.xml");
 
         /* 从【磁盘】中获取spring配置文件
             ApplicationContext application = new FileSystemXmlApplicationContext();
         */
 
-
+        //BeanFactory applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         // 返回的类型为Object：需要强转
         /* 获取自定的对象 */
         Object stuGet = applicationContext.getBean("student");
         Student stu = null;
-        if(stuGet instanceof Student){
+        if (stuGet instanceof Student) {
             stu = (Student) stuGet;
         }
         System.out.println(stu);
 
-
-
         /* 获取非自定的对象 */
         Object dateGet = applicationContext.getBean("myDate");
         Date date = null;
-        if(stuGet instanceof Student){
+        if (stuGet instanceof Student) {
             date = (Date) dateGet;
         }
         System.out.println(date);
@@ -62,7 +75,7 @@ public class MyTestForXMLDI {
      * @date 2021-12-07 17:59:26
      */
     @Test
-    public void test02(){
+    public void test02() {
         ApplicationContext applicationContext =
                 new ClassPathXmlApplicationContext("applicationContext.xml");
 
@@ -82,7 +95,7 @@ public class MyTestForXMLDI {
      * @date 2021-12-07 18:55:32
      */
     @Test
-    public void test03(){
+    public void test03() {
         ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("applicationContext.xml");
 
@@ -106,7 +119,7 @@ public class MyTestForXMLDI {
      * @date 2021-12-07 21:41:28
      */
     @Test
-    public void test04(){
+    public void test04() {
         ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("applicationContext.xml");
 
@@ -136,7 +149,7 @@ public class MyTestForXMLDI {
      * @date 2021-12-08 14:41:09
      */
     @Test
-    public void test05(){
+    public void test05() {
         ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("applicationContext.xml");
 

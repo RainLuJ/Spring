@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
+<!--
+
+        xmlns:（XML Namespaces的缩写）是一个属性，是XML（标准通用标记语言的子集）命名空间的声明。作用是赋予命名空间一个唯一的名称。
+
+        命名空间是什么呢？
+
+            由于xml允许你自己定义自己的标识，你定义的标识和其他人定义的标识有可能相同，但表示不同的意义。
+            当文件交换或者共享的时候就容易产生错误。为了避免这种错误发生，XML采用名字空间声明，允许你通过一个网址指向来识别你的标识。
+
+
+        原文链接：https://blog.csdn.net/qq_21370419/article/details/121030438
+
+-->
+
+
 <!--
     Spring的配置文件：
         1、beans：根标签，spring把java对象看做一个bean
@@ -40,6 +56,7 @@
     <!-- 【简单数据类型】的set注入：使用 <property> 标签，并通过【value标签属性】赋值
              在spring中规定java中的基本数据类型和String类型都是简单数据类型
              类中必须要有对应的set方法！！！ 否则会抛出异常！！！
+             值得一提的是：使用set注入，仅仅看类中有没有满足【set属性名】命名规范的set方法，而不看到底有没有这个 属性 。
 
              既然为属性通过set方法赋值，Spring就会依赖命名规范去寻找【set属性名】的对应set方法；
      -->
@@ -63,20 +80,44 @@
         <property name="city" value="GongAn"/>
     </bean>
 
+    <!--                           使用内部bean给另一个bean的 引用类型的属性 赋值                        -->
+    <!-- 内部bean出现在property标签中 -->
+    <bean id="peopleDiSetUseInnerBeanOfProperty" class="com.lujun61.bean.People">
+        <property name="name" value="WYY"/>
+        <property name="age" value="18"/>
+        <property name="address">
+            <bean class="com.lujun61.bean.Address">
+                <property name="province" value="HuBei"/>
+                <property name="city" value="GongAn"/>
+            </bean>
+        </property>
+    </bean>
 
+    <!-- 内部bean出现在constructor-arg标签中 -->
+    <bean id="peopleDiSetUseInnerBeanOfConstruct" class="com.lujun61.bean.People">
+        <constructor-arg name="name" value="LKQ"/>
+        <constructor-arg name="age" value="18"/>
+        <constructor-arg>
+            <bean class="com.lujun61.bean.Address">
+                <property name="province" value="HuBei"/>
+                <property name="city" value="GongAn"/>
+            </bean>
+        </constructor-arg>
+    </bean>
 
     <!--                  DI注入（给属性赋值）操作：构造方法                           -->
-    <!-- 构造注入：Spring调用类的有参构造方法，在构造方法中使用 <constructor-arg> 标签给属性赋值
+    <!-- 构造注入：Spring调用类的 有参构造 方法，在构造方法中使用 <constructor-arg> 标签给属性赋值
             ****** 一个 <constructor-arg> 标签表示构造方法的一个参数 ******
                 <constructor-arg> 标签属性：
                     name：表示构造方法的【形参名】
                     index：表示构造方法【参数的位置】，参数【从左往右】的位置是0、1、2 ……
                     value：如果构造方法的【形参类型】为【简单数据类型】的，用value
                     ref：如果构造方法的【形参类型】为【引用数据类型】的，用ref
+                    type：显示声明参数的类型
     -->
     <!-- 使用name属性 -->
     <bean id="peopleDiConstructorUseNameParam" class="com.lujun61.bean.People">
-        <constructor-arg name="name" value="LKQ"/>
+        <constructor-arg name="name" value="LKQ" type="java.lang.String"/>
         <constructor-arg name="age" value="18"/>
         <constructor-arg name="address" ref="address"/>
     </bean>
@@ -103,7 +144,7 @@
 
 
 
-    <!--                  【引用类型属性】的自动注入                        -->
+    <!--                  【引用类型属性】的【自动注入】                        -->
     <!--
         使用前景：减少了 <property name="" ref=""/> 标签的使用
 
@@ -114,18 +155,20 @@
             使用前提：java类中引用数据类型的【属性名称】和Spring配置文件中 <bean> 的【id属性名】一致
 
         2、按类型注入（byType）：
-            使用前提：java类中引用数据类型的【属性类型】和Spring配置文件中 <bean> 的【class类型】是同源的
+            使用前提：java类中引用数据类型的【属性类型】和Spring配置文件中 <bean> 的【class类型】是 同源 的
 
             同源属性： 要注意————>必须只有一个 <bean> 满足条件
                 1、java类中引用数据类型的属性和 <bean> 中的【class值】是一致的
-                2、java类中引用数据类型的属性和 <bean>中的【class值】具有【父子关系】
-                3、java类中引用数据类型的属性和 <bean>中的【class值】具有【接口与接口实现类】的关系
+                2、java类中引用数据类型的属性和 <bean>中的【class值】具有【父子关系】——————extends
+                3、java类中引用数据类型的属性和 <bean>中的【class值】具有【接口与接口实现类】的关系————implements
     -->
     <bean id="peopleDiAutoByName" class="com.lujun61.bean.People" autowire="byName">
         <property name="name" value="WYY"/>
         <property name="age" value="18"/>
+        <!-- 手动注入对象之后，自动注入就会失效。即手动注入优先级大于自动注入 <property name="address" ref="address"/>-->
     </bean>
 
+    <!-- 注意！！！如果存在多个同源对象，就会报错：因为Spring不知道该装配哪个 -->
     <bean id="peopleDiAutoByType" class="com.lujun61.bean.People" autowire="byType">
         <property name="name" value="WYY"/>
         <property name="age" value="18"/>
@@ -161,7 +204,7 @@
     <import resource="classpath:spring-sonConfig02.xml" />
 
     <!-- 导入方法二：使用通配符 *
-            注意：主配置文件不能被包含
+            注意：主配置文件不能被包含；否则将会是无限递归
     -->
     <import resource="classpath:spring-*.xml" />
 
@@ -183,12 +226,12 @@
             第二种方式：使用分隔符（ ; 或 ,），分隔多个包名
             第三种方式：指定父包
     -->
-    <context:component-scan base-package="com.lujun61.annotation" />
+    <context:component-scan base-package="com.lujun61.annotation, com.lujun61.cycle"/>
 
     <!--加载属性配置文件
             让属性配置文件中的值，可以通过 ${} 调用，来使用于给对象赋值的过程中
     -->
-    <context:property-placeholder location="classpath:user.properties" />
+    <context:property-placeholder location="classpath:user.properties"/>
 </beans>
 
 

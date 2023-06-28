@@ -11,11 +11,11 @@ import java.util.List;
  * @author Jun Lu
  * @date 2021-12-20 23:14:42
  */
-public class StudentServiceImpl implements StudentService {
+public class StudentServiceImpl implements StudentService  {
     //定义dao的属性；在服务类中进行dao操作
     private StudentDao studentDao;
 
-    //定义set方法，使Spring能使用DI赋值
+    //定义set方法，使Spring能使用基于XML的set方法-DI赋值。使用<property>标签
     public void setStudentDao(StudentDao studentDao) {
         this.studentDao = studentDao;
     }

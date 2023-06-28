@@ -29,7 +29,7 @@ public class RegisterServlet extends HttpServlet {
 
         /* 2、不使用工具类创建容器 */
         WebApplicationContext ctx = null;
-        /*String key = WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE;
+/*        String key = WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE;
         Object attr = getServletContext().getAttribute(key);
         if (attr != null) {
             ctx = (WebApplicationContext) attr;
@@ -37,7 +37,7 @@ public class RegisterServlet extends HttpServlet {
 
 
         /* 3、使用工具类创建容器 */
-        ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
 
 
         System.out.println("容器对象名称：" + ctx);

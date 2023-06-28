@@ -14,5 +14,9 @@ public class MyTest {
         BuyGoodsService service = (BuyGoodsService) applicationContext.getBean("buyGoodsService");
         System.out.println("service类型：" + service.getClass().getName());
         service.buyGood(1001, 1000000);
+
+
+
+
     }
 }

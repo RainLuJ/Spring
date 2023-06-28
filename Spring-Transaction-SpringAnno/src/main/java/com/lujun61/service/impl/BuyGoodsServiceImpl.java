@@ -10,23 +10,26 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 public class BuyGoodsServiceImpl implements BuyGoodsService {
     private SaleDao saleDao;
     private GoodsDao goodsDao;
 
     /**
-     * rollbackFor属性的处理逻辑：
-     *     1）Spring框架会首先检查方法抛出的异常是不是在rollbackFor属性中；
-     *        如果异常在rollbackFor的列表之中，不管是什么类型的异常，一定会回滚！
+     * 加上rollbackFor属性之后，Spring管理事务的处理逻辑：
+     *     1）Spring会首先检查方法抛出的异常是不是在rollbackFor属性中；
+     *        如果异常在rollbackFor的列表之中，且只要是Throwable的子类异常，一定会回滚！不管是受检还是非受检
      *     2）如果抛出的异常不在rollbackFor列表之中，
-     *        Spring会判断异常是不是RuntimeException；如果是，一定rollback。
+     *        Spring会判断异常是不是RuntimeException或者Error；如果是，一定rollback。
+     *        如果是受检异常，则直接提交。（王八的屁股！！！）
      */
     @Transactional(
             propagation = Propagation.REQUIRED,
             isolation = Isolation.DEFAULT,
             readOnly = false,
             rollbackFor = {
-                    NoEnoughGoodsException.class, NullPointerException.class
+                    NoEnoughGoodsException.class, NullPointerException.class, IOException.class
             }
     )
 

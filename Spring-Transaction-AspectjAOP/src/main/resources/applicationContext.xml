@@ -13,7 +13,7 @@
     <!-- 把数据库的配置信息写在一个独立的文件当中 -->
     <context:property-placeholder location="classpath:jdbc.properties"/>
 
-    <!-- 声明数据源DataSource：作用是->连接数据库的 -->
+    <!-- 声明数据源DataSource：作用是：连接数据库的 -->
     <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
         <!-- set注入，给DruidDataSource提供连接数据库的信息 -->
@@ -108,8 +108,8 @@
 
 
         <!-- 在以上的配置方式中存在着缺点：
-                无论哪个包中的符合命名规范的方法，都会被配置事务。这是不符合咱们的目的的。
-                如果我们只需要给service包中的类配置事务，那就得按照以下方法配置切面表达式
+                【任何包】中的符合命名规范的方法，都会被配置事务。这是不符合咱们的目的的。
+                如果我们只需要给 service 包中的类配置事务，那就得按照以下方法配置切面表达式
          -->
     </tx:advice>
 
@@ -117,7 +117,6 @@
         <!-- 配置切入点表达式：指定哪些包中的类要使用事务
                 id：切入点表达式的名称，唯一值
                 expression：切入点表达式，指定哪些类要使用事务，aspectj会去创建代理对象
-
         -->
         <aop:pointcut id="servicePT" expression="execution(* *..service..*.*(..))"/>
 
@@ -125,7 +124,7 @@
                  advice-ref：【通知】，引入<tx:advice>和</tx:advice>之间的配置内容
                  pointcut-ref：切入点表达式的id
         -->
-        <aop:advisor advice-ref="myAdvice" pointcut-ref="servicePT" />
+        <aop:advisor advice-ref="myAdvice" pointcut-ref="servicePT"/>
     </aop:config>
 </beans>
 

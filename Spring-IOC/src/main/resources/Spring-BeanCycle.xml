@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+    <!-- ======================================================================== -->
+    <!--                             Bean的生命周期                                -->
+
+    <bean id="customBeanPostProcessor" autowire="constructor" class="com.lujun61.cycle.CustomBeanPostProcessor"/>
+
+    <!--
+        1. 配置初始化方法和销毁方法：但是如果想要销毁方法生效，必须是单例模式：scope="singleton"
+        2.
+    -->
+    <bean id="beanForLifeCycle" class="com.lujun61.cycle.BeanCycle" destroy-method="destory" init-method="init">
+        <property name="name" value="LJ"/>
+        <!-- XML文件语法格式规定：不管什么数据类型，值都必须放在 "" 之中 -->
+        <property name="age" value="18"/>
+    </bean>
+
+    <!-- 开启对注解的支持 -->
+    <context:annotation-config/>
+</beans>
